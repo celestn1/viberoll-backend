@@ -1,0 +1,47 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+      "title": "VibeRoll Backend API",
+      "version": "1.0.0",
+      "description": "API documentation for the VibeRoll backend"
+    },
+    "servers": [
+      {
+        "url": "http://localhost:4001",
+        "description": "Local server"
+      }
+    ],
+    "paths": {
+      "/auth/register": {
+        "post": {
+          "summary": "Register a new user",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "email": { "type": "string" },
+                    "username": { "type": "string" },
+                    "password": { "type": "string" }
+                  },
+                  "required": ["email", "username", "password"]
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "User created successfully"
+            },
+            "400": {
+              "description": "Invalid input"
+            }
+          }
+        }
+      }
+      
+    }
+  }
+  
