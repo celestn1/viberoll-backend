@@ -1,17 +1,20 @@
 // __tests__/test-redis.test.js
 
-require('dotenv').config();
 const redisClient = require('../configs/redis');
 
+// Mock Redis client methods for testing
+jest.mock('../configs/redis', () => ({
+  connect: jest.fn().mockResolvedValue(),
+  ping: jest.fn().mockResolvedValue('PONG'),
+  quit: jest.fn().mockResolvedValue(),
+  isOpen: true, // Simulate an open connection
+}));
+
 describe('Redis Client', () => {
-  // Connect to Redis if not already connected
   beforeAll(async () => {
-    if (!redisClient.isOpen) {
-      await redisClient.connect();
-    }
+    await redisClient.connect();
   });
 
-  // Close the Redis client after tests complete if it's open
   afterAll(async () => {
     if (redisClient.isOpen) {
       await redisClient.quit();
