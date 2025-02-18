@@ -1,19 +1,17 @@
 // __tests__/test-db.test.js
 
 /**
- * Mock DB Test for PostgreSQL connection.
+ * Test for PostgreSQL connection.
  */
 
+require('dotenv').config();
 const pool = require('../configs/db');
 
-jest.mock('../configs/db', () => ({
-  query: jest.fn().mockResolvedValue({
-    rows: [{ now: new Date().toISOString() }],
-  }),
-  end: jest.fn(),
-}));
-
 describe('PostgreSQL Connection', () => {
+  afterAll(async () => {
+    await pool.end();
+  });
+
   test('should return current timestamp', async () => {
     const res = await pool.query('SELECT NOW()');
     expect(res.rows[0]).toHaveProperty('now');
