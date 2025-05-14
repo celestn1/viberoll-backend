@@ -1,20 +1,15 @@
 // backend/models/userModel.js
 // Handles user registration and login database operations.
+
 const pool = require('../configs/db');
 const bcrypt = require('bcrypt');
 const { MESSAGES, CONFIG } = require('../constants');
 
-
-/**
- * Create a new normal user with a hashed password.
- * Public registration always creates non-admin users.
- * @param {string} email
- * @param {string} username
- * @param {string} password - Plain text password.
- */
 async function createUser(email, username, password) {
-  // Check if the user already exists.
-  const existing = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
+  const existing = await pool.query(
+    'SELECT id FROM users WHERE email = $1 AND deleted_at IS NULL',
+    [email]
+  );
   if (existing.rows.length > 0) {
     const error = new Error(MESSAGES.USER_EXISTS);
     error.statusCode = 409;
@@ -24,22 +19,18 @@ async function createUser(email, username, password) {
   const hash = await bcrypt.hash(password, CONFIG.SALT_ROUNDS);
   const query = `
     INSERT INTO users (email, username, password, is_admin, created_at)
-    VALUES ($1, $2, $3, false, NOW()) RETURNING id, email, username`;
+    VALUES ($1, $2, $3, false, NOW())
+    RETURNING id, email, username`;
   const values = [email, username, hash];
   const res = await pool.query(query, values);
   return res.rows[0];
 }
 
-/**
- * Create a new admin user with a hashed password.
- * This function should only be called from a secure, admin-protected route.
- * @param {string} email
- * @param {string} username
- * @param {string} password - Plain text password.
- */
 async function createAdminUser(email, username, password) {
-  // Check if the user already exists.
-  const existing = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
+  const existing = await pool.query(
+    'SELECT id FROM users WHERE email = $1 AND deleted_at IS NULL',
+    [email]
+  );
   if (existing.rows.length > 0) {
     const error = new Error(MESSAGES.USER_EXISTS);
     error.statusCode = 409;
@@ -49,64 +40,161 @@ async function createAdminUser(email, username, password) {
   const hash = await bcrypt.hash(password, CONFIG.SALT_ROUNDS);
   const query = `
     INSERT INTO users (email, username, password, is_admin, created_at)
-    VALUES ($1, $2, $3, true, NOW()) RETURNING id, email, username, is_admin`;
+    VALUES ($1, $2, $3, true, NOW())
+    RETURNING id, email, username, is_admin`;
   const values = [email, username, hash];
   const res = await pool.query(query, values);
   return res.rows[0];
 }
 
-/**
- * Retrieve a user record by email.
- * @param {string} email
- */
 async function getUserByEmail(email) {
-  const res = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+  const res = await pool.query(
+    'SELECT * FROM users WHERE email = $1 AND deleted_at IS NULL',
+    [email]
+  );
   return res.rows[0];
 }
 
-/**
- * Update user details.
- * @param {number} userId - ID of the user to update.
- * @param {object} fields - Object containing fields to update: email, username, password.
- * @returns {object} The updated user record.
- */
 async function updateUser(userId, { email, username, password }) {
-    const updates = [];
-    const values = [];
-    let i = 1;
-  
-    if (email) {
-      updates.push(`email = $${i++}`);
-      values.push(email);
-    }
-    if (username) {
-      updates.push(`username = $${i++}`);
-      values.push(username);
-    }
-    if (password) {
-      const hash = await bcrypt.hash(password, CONFIG.SALT_ROUNDS);
-      updates.push(`password = $${i++}`);
-      values.push(hash);
-    }
-    if (updates.length === 0) {
-      throw new Error('No fields to update');
-    }
-  
-    const query = `UPDATE users SET ${updates.join(', ')} WHERE id = $${i} RETURNING id, email, username, is_admin`;
-    values.push(userId);
-  
-    const res = await pool.query(query, values);
-    return res.rows[0];
+  const updates = [];
+  const values = [];
+  let i = 1;
+
+  if (email) {
+    updates.push(`email = $${i++}`);
+    values.push(email);
   }
-  
-  /**
-   * Delete a user by ID.
-   * @param {number} userId - ID of the user to delete.
-   * @returns {boolean} True if deletion was successful.
-   */
-  async function deleteUser(userId) {
-    const res = await pool.query('DELETE FROM users WHERE id = $1', [userId]);
-    return res.rowCount > 0;
+  if (username) {
+    updates.push(`username = $${i++}`);
+    values.push(username);
   }
-  
-module.exports = { createUser, createAdminUser, getUserByEmail, updateUser, deleteUser };
+  if (password) {
+    const hash = await bcrypt.hash(password, CONFIG.SALT_ROUNDS);
+    updates.push(`password = $${i++}`);
+    values.push(hash);
+  }
+
+  if (updates.length === 0) {
+    throw new Error('No fields to update');
+  }
+
+  const query = `
+    UPDATE users
+    SET ${updates.join(', ')}
+    WHERE id = $${i} AND deleted_at IS NULL
+    RETURNING id, email, username, is_admin`;
+  values.push(userId);
+
+  const res = await pool.query(query, values);
+  return res.rows[0];
+}
+
+async function deleteUserById(userId) {
+  const res = await pool.query(
+    `UPDATE users
+     SET deleted_at = NOW()
+     WHERE id = $1 AND deleted_at IS NULL
+     RETURNING id, email, username, is_admin, deleted_at`,
+    [userId]
+  );
+  return res.rows[0] || null;
+}
+
+async function restoreUserById(userId) {
+  const res = await pool.query(
+    `UPDATE users
+     SET deleted_at = NULL
+     WHERE id = $1 AND deleted_at IS NOT NULL
+     RETURNING id, email, username, is_admin, deleted_at`,
+    [userId]
+  );
+  return res.rows[0] || null;
+}
+
+/**
+ * Get all users with pagination, filtering, search, and soft-delete control.
+ */
+async function getAllUsers({
+  page = 1,
+  limit = 10,
+  is_admin,
+  q,
+  created_before,
+  created_after,
+  include_deleted,
+  only_deleted,
+}) {
+  const offset = (page - 1) * limit;
+  const values = [];
+  const conditions = [];
+  let i = 1;
+
+  if (q) {
+    conditions.push(`(email ILIKE $${i} OR username ILIKE $${i})`);
+    values.push(`%${q}%`);
+    i++;
+  }
+
+  if (is_admin !== undefined) {
+    conditions.push(`is_admin = $${i}`);
+    values.push(is_admin);
+    i++;
+  }
+
+  if (created_before) {
+    conditions.push(`created_at <= $${i}`);
+    values.push(created_before);
+    i++;
+  }
+
+  if (created_after) {
+    conditions.push(`created_at >= $${i}`);
+    values.push(created_after);
+    i++;
+  }
+
+  if (only_deleted === true) {
+    conditions.push(`deleted_at IS NOT NULL`);
+  } else if (!include_deleted) {
+    conditions.push(`deleted_at IS NULL`);
+  }
+
+  const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+
+  const query = `
+    SELECT id, email, username, is_admin, created_at, deleted_at
+    FROM users
+    ${whereClause}
+    ORDER BY created_at DESC
+    LIMIT $${i++} OFFSET $${i}`;
+  values.push(limit, offset);
+
+  const res = await pool.query(query, values);
+  return res.rows;
+}
+
+/**
+ * Get audit logs with pagination.
+ */
+async function getAuditLogs({ limit = 50, page = 1 }) {
+  const offset = (page - 1) * limit;
+  const res = await pool.query(
+    `SELECT id, admin_id, action, target_user_id, target_email, details, timestamp
+     FROM audit_logs
+     ORDER BY timestamp DESC
+     LIMIT $1 OFFSET $2`,
+    [limit, offset]
+  );
+  return res.rows;
+}
+
+module.exports = {
+  createUser,
+  createAdminUser,
+  getUserByEmail,
+  updateUser,
+  deleteUserById,
+  restoreUserById,
+  getAllUsers,
+  getAuditLogs,
+};
