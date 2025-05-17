@@ -1,13 +1,14 @@
 {
   "name": "viberoll-backend",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "main": "server.js",
   "scripts": {
     "test": "jest",
-    "start": "node server.js",
+    "start": "node scripts/seedAdmin.js && node server.js",
     "dev": "nodemon --delay 5 server.js",
     "nodemon": "nodemon --verbose server.js",
-    "seed:admin": "node scripts/seedAdmin.js"
+    "seed:admin": "node scripts/seedAdmin.js",
+    "migrate": "node scripts/migrate.js"
   },
   "keywords": [],
   "author": "Celestine Ntadi",
