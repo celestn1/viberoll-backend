@@ -44,6 +44,64 @@ viberoll-backend/
 ├── swagger.js         # Swagger config
 ├── server.js          # App entry point
 ├── .env               # Environment variables
+
+
+azureuser@viberoll-nodejs-app:~/viberoll-backend$ tree -I 'node_modules' -L 3
+├── __tests__
+│   ├── ethersWallet.test.js
+│   ├── logger.test.js
+│   ├── test-db.test.js
+│   └── test-redis.test.js
+├── configs
+│   ├── db.js
+│   ├── redis.js
+│   └── upload.js
+├── constants.js
+├── controllers
+│   ├── admin
+│   │   └── userAdminController.js
+│   ├── commentController.js
+│   ├── logoutController.js
+│   ├── tokenController.js
+│   ├── userController.js
+│   └── videoController.js
+├── docs
+│   └── swagger.json
+├── logs
+│   └── error.log
+├── middleware
+│   ├── adminMiddleware.js
+│   ├── asyncHandler.js
+│   ├── authMiddleware.js
+│   ├── errorHandler.js
+│   └── validateMiddleware.js
+├── models
+│   ├── commentModel.js
+│   ├── userModel.js
+│   └── videoModel.js
+├── package-lock.json
+├── package.json
+├── routes
+│   ├── admin
+│   │   └── adminRoutes.js
+│   ├── authRoutes.js
+│   ├── commentRoutes.js
+│   ├── userRoutes.js
+│   └── videoRoutes.js
+├── server.js
+├── services
+│   ├── ffmpegService.js
+│   ├── nftService.js
+│   └── openaiService.js
+├── swagger.js
+├── uploads
+│   └── 1739856246617-649175844.mp4
+└── utils
+    └── logger.js
+
+14 directories, 39 files
+azureuser@viberoll-nodejs-app:~/viberoll-backend$
+
 ```
 
 ---
