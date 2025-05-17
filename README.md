@@ -1,44 +1,181 @@
-# VibeRoll Backend
 
-## Overview
+# 🎥 VibeRoll Backend
 
-VibeRoll is a fluid-scrolling video application inspired by TikTok and Pinterest. This repository contains the backend services powering authentication, video uploads, AI features (captioning, tagging), and payment integration.
+The backend API for **VibeRoll**, a next-gen content-sharing platform. Built with **Node.js**, **Express**, **PostgreSQL**, **Redis**, and **JWT authentication**, this service powers video uploads, user authentication, role-based access, AI captioning, and audit logging.
 
-## Features
+---
 
-- 🔐 User authentication and session management (JWT)
-- 📹 Video upload and storage via cloud provider
-- 🧠 AI-powered captions using ChatGPT
-- 🏷️ Smart tagging using Google Vision API
-- 💳 Stripe payments and NFT support
-- 🐳 Docker-ready for seamless deployment
-- 📈 API for video feed, profiles, and metadata
+## 🚀 Features
 
-## Tech Stack
+- 🔐 JWT Authentication (Access + Refresh Tokens)
+- 🧑‍💼 Role-based access control (Admin/User)
+- 🧠 AI Caption Generation (OpenAI)
+- 🧾 Swagger API Docs
+- 🧠 Redis Caching
+- 📹 Video Metadata Handling
+- 📜 Audit Log System (Admin actions)
+- 🔁 Soft-delete + Restore Users
+- 🌐 Docker & CI/CD Ready
 
-- **Runtime:** Node.js
-- **Framework:** Express.js
-- **Database:** MongoDB (via Mongoose)
-- **Authentication:** JWT
-- **AI Services:** OpenAI GPT, Google Vision
-- **Payments:** Stripe, NFT support
-- **DevOps:** Docker, dotenv, CORS, Helmet, Morgan
+---
 
-## Getting Started
+## 🛠️ Tech Stack
 
-### Prerequisites
+| Layer       | Tech                             |
+|-------------|----------------------------------|
+| Language    | Node.js + Express                |
+| Database    | PostgreSQL                       |
+| Caching     | Redis                            |
+| Auth        | JWT + Bcrypt                     |
+| Docs        | Swagger (OpenAPI 3.0)            |
+| Infra       | PM2 or systemd                   |
 
-- Node.js ≥ 18
-- MongoDB instance (local or Atlas)
-- API keys for:
-  - OpenAI
-  - Google Cloud Vision
-  - Stripe
+---
 
-### Installation
+## 📂 Project Structure
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/celestn1/viberoll-backend.git
-   cd viberoll-backend
-...
+```
+viberoll-backend/
+├── controllers/       # API logic
+├── routes/            # Route definitions
+├── models/            # DB queries (pg)
+├── configs/           # Redis + DB config
+├── middleware/        # Auth, error, rate limit
+├── swagger.js         # Swagger config
+├── server.js          # App entry point
+├── .env               # Environment variables
+```
+
+---
+
+## 📄 API Documentation
+
+Once the server is running:
+
+```
+http://<your-server-ip>:4001/api-docs
+```
+
+Powered by Swagger UI.
+
+---
+
+## 🔧 Environment Variables
+
+Create a `.env` file in the root:
+
+```env
+# Server
+PORT=4001
+NODE_ENV=production
+
+# Database
+DATABASE_URL=postgres://viberoll_service:admin@localhost:5432/viberoll
+
+# Redis
+REDIS_URL=redis://localhost:6379
+
+# JWT
+JWT_SECRET=your_access_token_secret
+JWT_REFRESH_SECRET=your_refresh_token_secret
+JWT_ACCESS_TOKEN_EXPIRATION=24h
+JWT_REFRESH_TOKEN_EXPIRATION=7d
+SALT_ROUNDS=10
+
+# AI Integration
+OPENAI_API_KEY=your_openai_key
+OPENAI_API_ENDPOINT=https://api.openai.com/v1/engines/davinci/completions
+
+# Blockchain
+NFT_CONTRACT_ADDRESS=0x123...
+RPC_URL=https://polygon-rpc.com
+WALLET_PRIVATE_KEY=0x...
+```
+
+> ⚠️ Never commit `.env` to version control.
+
+---
+
+## 🧪 Running Locally
+
+```bash
+git clone https://github.com/celestn1/viberoll-backend.git
+cd viberoll-backend
+npm install
+cp .env.example .env  # Then fill it in
+npm start
+```
+
+---
+
+## 🐘 PostgreSQL Setup
+
+```sql
+CREATE USER viberoll_service WITH PASSWORD 'admin';
+CREATE DATABASE viberoll OWNER viberoll_service;
+```
+
+Restore your backup if needed:
+
+```bash
+psql -U postgres -d viberoll -f viberoll_backup.sql
+```
+
+---
+
+## 🚀 Production Deployment
+
+Use PM2 or systemd for process management:
+
+```bash
+pm2 start server.js --name viberoll-backend
+pm2 save
+```
+
+Or follow full deployment instructions in `DEPLOYMENT.md`.
+
+---
+
+## 📤 API Routes Overview
+
+| Method | Endpoint              | Description                     |
+|--------|-----------------------|---------------------------------|
+| POST   | `/auth/login`         | Login a user                    |
+| POST   | `/auth/register`      | Register a new user             |
+| PUT    | `/user/update`        | Update user info                |
+| GET    | `/videos`             | List all videos                 |
+| POST   | `/videos/upload`      | Upload video metadata           |
+| PUT    | `/admin/soft-delete`  | Soft-delete user (admin only)   |
+| PUT    | `/admin/restore`      | Restore soft-deleted user       |
+
+> All protected routes require an `Authorization: Bearer <accessToken>` header.
+
+---
+
+## 🛡️ Security
+
+- Rate-limited via `express-rate-limit`
+- Helmet headers
+- Encrypted passwords with `bcrypt`
+- Signed tokens with JWT
+
+---
+
+## 🧠 Audit Logging
+
+Admin actions (soft delete, restore) are tracked in `audit_logs` with metadata including:
+- admin ID
+- affected user ID/email
+- action
+- timestamp
+- reason
+
+---
+
+## ✅ License
+
+MIT
+
+---
+
+
