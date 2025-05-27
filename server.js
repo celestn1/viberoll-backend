@@ -51,6 +51,11 @@ app.use('/videos', videoRoutes);
 app.use('/admin', adminRoutes);
 app.use('/user', userRoutes);
 
+//Debug route added
+app.get("/debug/env", (req, res) => {
+  res.json({ DATABASE_URL: process.env.DATABASE_URL });
+});
+
 // Global error handler.
 app.use(errorHandler);
 
