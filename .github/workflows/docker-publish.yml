@@ -1,5 +1,5 @@
 # viberoll-backend/.github/workflows/docker-publish.yml
-# docker image build and push to Amazon ECR, then trigger infrastructure deployment
+# docker image build and push to Amazon ECR, then trigger infrastructure deployment "Deploy to AWS" workflow
 
 name: Build and Push to ECR
 
