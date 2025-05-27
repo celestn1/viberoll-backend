@@ -56,6 +56,11 @@ app.get("/debug/env", (req, res) => {
   res.json({ DATABASE_URL: process.env.DATABASE_URL });
 });
 
+// Health check route for ALB
+app.get('/health', (req, res) => {
+  res.sendStatus(200);
+});
+
 // Global error handler.
 app.use(errorHandler);
 
