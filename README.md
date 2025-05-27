@@ -1,25 +1,25 @@
 
-# 🎥 VibeRoll Backend
+# VibeRoll Backend
 
 The backend API for **VibeRoll**, a next-gen content-sharing platform. Built with **Node.js**, **Express**, **PostgreSQL**, **Redis**, and **JWT authentication**, this service powers video uploads, user authentication, role-based access, AI captioning, and audit logging.
 
 ---
 
-## 🚀 Features
+## Features
 
-- 🔐 JWT Authentication (Access + Refresh Tokens)
-- 🧑‍💼 Role-based access control (Admin/User)
-- 🧠 AI Caption Generation (OpenAI)
-- 🧾 Swagger API Docs
-- 🧠 Redis Caching
-- 📹 Video Metadata Handling
-- 📜 Audit Log System (Admin actions)
-- 🔁 Soft-delete + Restore Users
-- 🌐 Docker & CI/CD Ready
+- JWT Authentication (Access + Refresh Tokens)
+- Role-based access control (Admin/User)
+- AI Caption Generation (OpenAI)
+- Swagger API Docs
+- Redis Caching
+- Video Metadata Handling
+- Audit Log System (Admin actions)
+- Soft-delete + Restore Users
+- Docker & CI/CD Ready
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Layer       | Tech                             |
 |-------------|----------------------------------|
@@ -106,7 +106,7 @@ azureuser@viberoll-nodejs-app:~/viberoll-backend$
 
 ---
 
-## 📄 API Documentation
+## API Documentation
 
 Once the server is running:
 
@@ -118,7 +118,7 @@ Powered by Swagger UI.
 
 ---
 
-## 🔧 Environment Variables
+## Environment Variables
 
 Create a `.env` file in the root:
 
@@ -150,11 +150,11 @@ RPC_URL=https://polygon-rpc.com
 WALLET_PRIVATE_KEY=0x...
 ```
 
-> ⚠️ Never commit `.env` to version control.
+> Never commit `.env` to version control.
 
 ---
 
-## 🧪 Running Locally
+## Running Locally
 
 ```bash
 git clone https://github.com/celestn1/viberoll-backend.git
@@ -166,7 +166,7 @@ npm start
 
 ---
 
-## 🐘 PostgreSQL Setup
+## PostgreSQL Setup
 
 ```sql
 CREATE USER viberoll_service WITH PASSWORD 'admin';
@@ -181,7 +181,7 @@ psql -U postgres -d viberoll -f viberoll_backup.sql
 
 ---
 
-## 🚀 Production Deployment
+## Production Deployment
 
 Use PM2 or systemd for process management:
 
@@ -194,7 +194,7 @@ Or follow full deployment instructions in `DEPLOYMENT.md`.
 
 ---
 
-## 📤 API Routes Overview
+## API Routes Overview
 
 | Method | Endpoint              | Description                     |
 |--------|-----------------------|---------------------------------|
@@ -210,7 +210,7 @@ Or follow full deployment instructions in `DEPLOYMENT.md`.
 
 ---
 
-## 🛡️ Security
+## Security
 
 - Rate-limited via `express-rate-limit`
 - Helmet headers
@@ -219,7 +219,7 @@ Or follow full deployment instructions in `DEPLOYMENT.md`.
 
 ---
 
-## 🧠 Audit Logging
+## Audit Logging
 
 Admin actions (soft delete, restore) are tracked in `audit_logs` with metadata including:
 - admin ID
