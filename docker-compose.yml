@@ -11,7 +11,7 @@ services:
       - postgres
       - redis
     restart: unless-stopped
-    command: sh -c "./wait-for-it.sh postgres:5432 -- npm run migrate && npm start"
+    command: sh -c "./wait-for-it.sh postgres:5432 -- npm run setup && npm start"
   postgres:
     image: postgres:14
     container_name: viberoll-db
