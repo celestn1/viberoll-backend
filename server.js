@@ -51,17 +51,6 @@ app.use('/videos', videoRoutes);
 app.use('/admin', adminRoutes);
 app.use('/user', userRoutes);
 
-// debug route to check environment variables and SSL settings
-app.get("/debug/env", (req, res) => {
-  res.json({
-    NODE_ENV: process.env.NODE_ENV,
-    DATABASE_URL: process.env.DATABASE_URL,
-    SSL: process.env.NODE_ENV === 'production'
-      ? { rejectUnauthorized: false }
-      : false
-  });
-});
-
 // Health check route for ALB
 app.get('/health', (req, res) => {
   res.sendStatus(200);
