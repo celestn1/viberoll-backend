@@ -1,5 +1,8 @@
 node_modules
+**/*.ts
 .env
 logs
 *.log
+.git
+.github
 
