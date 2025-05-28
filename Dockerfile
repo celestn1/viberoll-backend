@@ -14,4 +14,3 @@ RUN chmod +x wait-for-it.sh
 EXPOSE 4001
 
 CMD ["npm", "start"]
-

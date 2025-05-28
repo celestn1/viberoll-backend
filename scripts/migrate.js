@@ -65,4 +65,3 @@ async function migrate() {
 }
 
 migrate();
-
