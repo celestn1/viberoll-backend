@@ -60,4 +60,4 @@ jobs:
             {
               "image_digest":   "${{ steps.push-image.outputs.image_digest }}",
               "commit_message": "${{ github.event.head_commit.message }}"
-            }s
+            }
