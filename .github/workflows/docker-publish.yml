@@ -57,6 +57,6 @@ jobs:
           event-type: deploy-trigger
           client-payload: |
             {
-              "image_digest": "${{ steps.push-image.outputs.image_digest }}"
+              "image_digest": "${{ steps.push-image.outputs.image_digest }}",
               "commit_message": "${{ github.event.head_commit.message }}"
             }
