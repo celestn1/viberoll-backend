@@ -2,11 +2,19 @@
 require('dotenv').config();
 const { Pool } = require('pg');
 
+// Configure SSL if required
+const sslConfig = process.env.PGSSLMODE === 'require'
+  ? { rejectUnauthorized: false }
+  : false;
+
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
+  ssl: sslConfig,
 });
 
-async function migrate() {
+(async () => {
+  let exitCode = 0;
+
   try {
     console.log('🔄 Running DB migrations...');
 
@@ -57,11 +65,14 @@ async function migrate() {
 
     console.log('✅ Migrations complete.');
   } catch (err) {
-    console.error('❌ Migration failed:', err);
-    process.exit(1);
+    console.error('❌ Migration failed:', err.message);
+    exitCode = 1;
   } finally {
-    await pool.end();
+    try {
+      await pool.end();
+    } catch (closeErr) {
+      console.warn('⚠️ Error closing DB pool:', closeErr.message);
+    }
+    process.exit(exitCode);
   }
-}
-
-migrate();
+})();

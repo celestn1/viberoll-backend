@@ -2,29 +2,39 @@
 
 require('dotenv').config();
 
-const port = process.env.PORT || 4000;
-const baseUrl = process.env.HOST + port || `http://localhost:${port}`;  // this produces "http://localhost:4001"
-
 const swaggerJsdoc = require('swagger-jsdoc');
+
+// 1) Port for your local server
+const port = process.env.PORT || 4000;
+
+// 2) The URL that Swagger UI will use as the server.
+//    In prod, set this to your ALB DNS + scheme via Terraform / ECS env.
+//    In dev, it will default to localhost.
+const swaggerServerUrl =
+  process.env.SWAGGER_SERVER_URL ||  // e.g. "https://viberoll-alb-1234.eu-west-2.elb.amazonaws.com"
+  `http://localhost:${port}`;        // fallback for local dev
 
 const options = {
   definition: {
-    openapi: '3.0.0', // Sets the OpenAPI version
+    openapi: '3.0.0',
     info: {
-      title: 'VibeRoll Backend API', // The title of your API
-      version: '1.0.0', // The version number of your API
-      description: 'API documentation for the VibeRoll backend', // A brief description of your API
+      title: 'VibeRoll Backend API',
+      version: '1.0.0',
+      description: 'API documentation for the VibeRoll backend',
     },
+    // 3) servers driven by the single env var (or localhost fallback)
     servers: [
       {
-        url: baseUrl, // Dynamically builds the URL, e.g., "http://localhost:4001"
-        description: 'Local server',
+        url: swaggerServerUrl,
+        description: process.env.SWAGGER_SERVER_URL
+          ? 'Production (ALB)'
+          : 'Local development',
       },
     ],
     components: {
       securitySchemes: {
         bearerAuth: {
-          type: 'http',
+          type:   'http',
           scheme: 'bearer',
           bearerFormat: 'JWT',
         },
@@ -36,7 +46,6 @@ const options = {
       },
     ],
   },
-  // Specify the locations of your API documentation in your project
   apis: [
     './controllers/*.js',
     './controllers/admin/*.js',
