@@ -36,6 +36,8 @@ jobs:
           registry: docker.io
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+          logout: false
+          ecr: false
 
       - name: Ensure ECR repository exists
         run: |
