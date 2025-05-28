@@ -2,7 +2,7 @@
 require('dotenv').config();
 const swaggerJsdoc = require('swagger-jsdoc');
 
-const port    = process.env.PORT || 4000;
+const port    = process.env.PORT || 4001;
 const albDns  = process.env.ALB_DNS;         // from ECS env
 const scheme  = process.env.ALB_SCHEME      // overrideable…
   ? process.env.ALB_SCHEME.toLowerCase()
