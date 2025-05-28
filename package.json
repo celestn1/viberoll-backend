@@ -4,7 +4,7 @@
   "main": "server.js",
   "scripts": {
     "test": "jest",
-    "start": "node server.js",
+    "start": "npm run setup && node server.js",
     "setup": "npm run migrate && npm run seed:admin",
     "dev": "nodemon --delay 5 server.js",
     "nodemon": "nodemon --verbose server.js",
