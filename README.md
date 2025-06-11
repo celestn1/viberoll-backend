@@ -1,7 +1,7 @@
 
 # VibeRoll Backend
 
-The backend API for **VibeRoll**, a next-gen content-sharing platform. Built with **Node.js**, **Express**, **PostgreSQL**, **Redis**, and **JWT authentication**, this service powers video uploads, user authentication, role-based access, AI captioning, and audit logging.
+The backend API for **VibeRoll**, a next-gen content-sharing platform. Built with **Node.js**, **Express**, **PostgreSQL**, **Redis**, and **User authentication**, this service powers video uploads, user authentication, role-based access, AI captioning, and audit logging.
 
 ---
 
